@@ -2,6 +2,7 @@
 
 import socket
 import sys
+import argparse
 
 def userPortInput():		    # Ask the user for the ports to be read.
     input = raw_input("Enter the ports to be checked(sepparated by spaces): ")
@@ -9,28 +10,24 @@ def userPortInput():		    # Ask the user for the ports to be read.
     return input
 
 def main():
-    options = ""	
-    verbose = False
-
-    if len(sys.argv) == 1:	    # If no arguments were given in the script call userPortInput() function
+    parser = argparse.ArgumentParser(description = "Test for open ports...")
+    mutex = parser.add_mutually_exclusive_group()
+    parser.add_argument('-v', '--verbose', help='Add extra verbosity to the output of the scanner', action='store_true')
+    mutex.add_argument('-a', '--all', help='Scan all the possible ports', action='store_true')
+    mutex.add_argument('-p', '--ports', help='Scan the specified ports only', type=int, choices=range(0,65536), nargs='*', default=[])
+    args = parser.parse_args()
+    if args.all:
+        ports = range(0, 65536)
+    elif args.ports:
+        ports = args.ports
+    else:
         ports = userPortInput()
-    elif len(sys.argv) > 1:	    # ...otherwise continue with the execution of the scanner
-        ports = sys.argv[1:]
-        if ports[0][0] == '-':	    # Check for options
-	    options = ports[0]
-	    ports = ports[1:]
-	    for o in options[1:]:
-                if o == 'a':
-                    ports = range(0,65535)
-                if o == 'v':
-                    verbose = True;
-	        if o == 'h':
-		    print "Usage: portscanner.py [OPTIONS] [PORTS]\nPossible options:\n\t-a (Check all possible ports [0 - 65535])\n\t-v (Print more information for every port scanned)\n\t-h (This help text)"
+    
     for port in ports:		    # For every given port attempt to connect...
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         banner = False
         try:
-            if verbose == True:
+            if args.verbose:
                 print "--> Attempting to connect to 127.0.0.1:" + str(port)
             s.connect(('127.0.0.1',int(port)))
             s.send("Port Checking")
