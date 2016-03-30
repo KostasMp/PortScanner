@@ -4,11 +4,6 @@ import socket
 import sys
 import argparse
 
-def userPortInput():		    # Ask the user for the ports to be read.
-    input = raw_input("Enter the ports to be checked(sepparated by spaces): ")
-    input = input.split(" ")
-    return input
-
 def main():
     parser = argparse.ArgumentParser(description = "Test for open ports...")
     mutex = parser.add_mutually_exclusive_group()
@@ -16,6 +11,7 @@ def main():
     mutex.add_argument('-a', '--all', help='Scan all the possible ports', action='store_true')
     mutex.add_argument('-p', '--ports', help='Scan the specified ports only', type=int, choices=range(0,65536), nargs='*', default=[])
     args = parser.parse_args()
+
     if args.all:
         ports = range(0, 65536)
     elif args.ports:
