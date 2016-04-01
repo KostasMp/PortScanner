@@ -22,6 +22,10 @@ def main():
 		ports = args.ports
     
 	ip = socket.gethostbyname(args.ip)
+	try:
+		host = socket.gethostbyaddr(ip)[0]
+	except socket.herror:
+		host = 'Uknown Host'
 	protocol = args.type
 
 	for port in ports:		    # For every given port attempt to connect...
@@ -32,12 +36,12 @@ def main():
 		banner = False
 		s.settimeout(3)
 		try:
-			serv = "[" +  socket.getservbyport(port) + "]"
+			serv = socket.getservbyport(port)
 		except socket.error:
-			serv = ""
+			serv = 'Uknown Service'
 		try:
 			if args.verbose:
-				print "--> Attempting to connect to " + ip + ":" + str(port) + serv.upper() + "(" + protocol.upper() + ")"
+				print '--> Attempting to connect to ' + ip + '(' + host + ')' + ':' + str(port) + '/' + protocol.upper() + ' [' + serv.upper() + ']'
 			s.connect((ip ,int(port)))
 			s.send("Port Checking")
 			try:
@@ -47,9 +51,9 @@ def main():
 		except socket.error:	    # If a socket.error exception is caught, it means the attempt to connect has failed, 
 			continue		    # hence the port is closed... In that case advance to the next port.
 		if banner=='':
-			banner = "No Response..."
-		print "[+] Port " + str(port) + serv.upper() + "(" + protocol.upper() + ")" + " is open!" + "  ==> Reply: " + str(banner)
+			banner = 'No Response...'
+		print '[+] Port ' + str(port) + '/' + protocol.upper() + ' [' + serv.upper() + ']' + ' is open!' + '  ==> Reply: ' + str(banner)
 		s.close()
 
-if __name__ =="__main__":
+if __name__ =='__main__':
 	main()
