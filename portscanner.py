@@ -21,7 +21,7 @@ def main():
 	elif args.ports:
 		ports = args.ports
     
-	ip = args.ip
+	ip = socket.gethostbyname(args.ip)
 	protocol = args.type
 
 	for port in ports:		    # For every given port attempt to connect...
