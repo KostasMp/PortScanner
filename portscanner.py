@@ -32,8 +32,12 @@ def main():
 		banner = False
 		s.settimeout(3)
 		try:
+			serv = "[" +  socket.getservbyport(port) + "]"
+		except socket.error:
+			serv = ""
+		try:
 			if args.verbose:
-				print "--> Attempting to connect to " + ip + ":" + str(port) + "(" + protocol.upper() + ")"
+				print "--> Attempting to connect to " + ip + ":" + str(port) + serv.upper() + "(" + protocol.upper() + ")"
 			s.connect((ip ,int(port)))
 			s.send("Port Checking")
 			try:
@@ -44,7 +48,7 @@ def main():
 			continue		    # hence the port is closed... In that case advance to the next port.
 		if banner=='':
 			banner = "No Response..."
-		print "[+] Port "+ str(port) + "(" + protocol.upper() + ")" + " is open!" + "  ==> Reply: " + str(banner)
+		print "[+] Port " + str(port) + serv.upper() + "(" + protocol.upper() + ")" + " is open!" + "  ==> Reply: " + str(banner)
 		s.close()
 
 if __name__ =="__main__":
