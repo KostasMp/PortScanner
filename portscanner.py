@@ -15,12 +15,11 @@ def main():
 
 	args = parser.parse_args()
 
+	ports = []
 	if args.all:
 		ports = range(0, 65536)
 	elif args.ports:
 		ports = args.ports
-	else:
-		ports = userPortInput()
     
 	ip = args.ip
 	protocol = args.type
