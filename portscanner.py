@@ -25,15 +25,16 @@ def main():
 	try:
 		ip = socket.gethostbyname(args.ip)
 	except socket.gaierror:
-		sys.exit('Invalid ip address!')
+		sys.exit('[!] Invalid ip-address/hostname!\n[!] Exiting...')
 	try:
 		host = socket.gethostbyaddr(ip)[0]
 	except socket.herror:
 		host = 'Uknown Host'
 	protocol = args.type
 
-	print ''
-	ping_response = os.system('ping -q -c1 -w2 ' + ip)
+	print '[+] Pinging host ' + ip + ":" + host
+	os.system('ping -q -c1 -w2 ' + ip)
+	print ""
 
 	for port in ports:		    # For every given port attempt to connect...
 		if (args.type == 'tcp' or args.type == 'TCP'):
@@ -48,7 +49,7 @@ def main():
 			serv = 'Uknown Service'
 		try:
 			if args.verbose:
-				print '--> Attempting to connect to ' + ip + '(' + host + ')' + ':' + str(port) + '/' + protocol.upper() + ' [' + serv.upper() + ']'
+				print '[+] Attempting to connect to ' + ip + '(' + host + ')' + ':' + str(port) + '/' + protocol.upper() + ' [' + serv.upper() + ']'
 			s.connect((ip ,int(port)))
 			s.send("Port Checking")
 			try:
