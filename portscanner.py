@@ -2,12 +2,13 @@
 
 import socket
 import sys
+import os
 import argparse
 
 def main():
-	parser = argparse.ArgumentParser(description = "Test a specified IP for open ports.")
-	mutex = parser.add_mutually_exclusive_group()
-	parser.add_argument('ip', metavar='IP', help='The ip to be scanned for open ports')
+	parser = argparse.ArgumentParser(description = "Test a specified ip/host for open ports.")
+	mutex = parser.add_mutually_exclusive_group(required=True)
+	parser.add_argument('ip', metavar='IP', help='The ip/host to be scanned for open ports')
 	parser.add_argument('-v', '--verbose', help='Add extra verbosity to the output of the scanner', action='store_true')
 	parser.add_argument('-t', '--type', help='The type of the ports to be scanned', choices=['tcp', 'TCP', 'udp', 'UDP'], metavar='[ udp | tcp ]', default='tcp')
 	mutex.add_argument('-a', '--all', help='Scan all the possible ports', action='store_true')
@@ -21,12 +22,18 @@ def main():
 	elif args.ports:
 		ports = args.ports
     
-	ip = socket.gethostbyname(args.ip)
+	try:
+		ip = socket.gethostbyname(args.ip)
+	except socket.gaierror:
+		sys.exit('Invalid ip address!')
 	try:
 		host = socket.gethostbyaddr(ip)[0]
 	except socket.herror:
 		host = 'Uknown Host'
 	protocol = args.type
+
+	print ''
+	ping_response = os.system('ping -q -c1 -w2 ' + ip)
 
 	for port in ports:		    # For every given port attempt to connect...
 		if (args.type == 'tcp' or args.type == 'TCP'):
