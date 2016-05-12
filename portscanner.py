@@ -14,6 +14,19 @@ class colors:
 	INFO='\033[34m'
 	END='\033[0m'
 
+def verbose_message(ip, host, port, protocol, serv):
+	print colors.INFO + '[+] ' + colors.END + 'Attempting to connect to ' + colors.INFO + '::' + colors.END + colors.HOST + ip + colors.END + colors.INFO + ':' + colors.END + colors.HOST + host + colors.END + colors.INFO + '::' + colors.END + ' via port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE + serv.upper() + colors.END + ']'
+
+def results_message(port, protocol, serv, banner):
+	print colors.INFO + '[+] ' + colors.END + 'Port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE +serv.upper() + colors.END + ']' + ' is open!' + '  ' + colors.INFO + '==>' + colors.END + ' Reply: ' + str(banner)
+
+def ping(ip, host):
+	print ''
+	print colors.INFO + '[+] ' + colors.END + 'Pinging host ' + ip + ":" + host
+	print ''
+	os.system('ping -q -c1 -w2 ' + ip)
+	print ''
+
 def main():
 	parser = argparse.ArgumentParser(description = "Test a specified ip/host for open ports.")
 	mutex = parser.add_mutually_exclusive_group(required=True)
@@ -41,9 +54,7 @@ def main():
 		host = 'Uknown Host'
 	protocol = args.type
 
-	print colors.INFO + '[+] ' + colors.END + 'Pinging host ' + ip + ":" + host
-	os.system('ping -q -c1 -w2 ' + ip)
-	print ""
+	ping(ip, host)
 
 	for port in ports:		    # For every given port attempt to connect...
 		if (args.type == 'tcp' or args.type == 'TCP'):
@@ -58,18 +69,18 @@ def main():
 			serv = 'Uknown Service'
 		try:
 			if args.verbose:
-				print colors.INFO + '[+] ' + colors.END + 'Attempting to connect to ' + colors.INFO + '::' + colors.END + colors.HOST + ip + colors.END + colors.INFO + ':' + colors.END + colors.HOST +  host + colors.END + colors.INFO + '::' + colors.END + ' via port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE + serv.upper() + colors.END + ']'
+				verbose_message(ip, host, port, protocol, serv)
 			s.connect((ip ,int(port)))
 			s.send("Port Checking")
 			try:
 				banner = s.recv(1024)
 			except socket.timeout:
 				banner = ''
-		except socket.error:	    # If a socket.error exception is caught, it means the attempt to connect has failed, 
-			continue		    # hence the port is closed... In that case advance to the next port.
+		except socket.error:		# If a socket.error exception is caught, it means the attempt to connect has failed, 
+			continue				# hence the port is closed... In that case advance to the next port.
 		if banner=='':
 			banner = 'No Response...'
-		print colors.INFO + '[+] ' + colors.END + 'Port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE +serv.upper() + colors.END + ']' + ' is open!' + '  ' + colors.INFO + '==>' + colors.END + ' Reply: ' + str(banner)
+		results_message(port, protocol, serv, banner)
 		s.close()
 
 if __name__ =='__main__':
