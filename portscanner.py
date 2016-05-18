@@ -14,18 +14,23 @@ class colors:
 	INFO='\033[34m'
 	END='\033[0m'
 
-def verbose_message(ip, host, port, protocol, serv):
-	print colors.INFO + '[+] ' + colors.END + 'Attempting to connect to ' + colors.INFO + '::' + colors.END + colors.HOST + ip + colors.END + colors.INFO + ':' + colors.END + colors.HOST + host + colors.END + colors.INFO + '::' + colors.END + ' via port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE + serv.upper() + colors.END + ']'
+class Host:
+	
+	def __init__(self, ip_or_host):
+		self.validate_ip(ip_or_host)
+		self.validate_hostname(self.ip)
 
-def results_message(port, protocol, serv, banner):
-	print colors.INFO + '[+] ' + colors.END + 'Port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE +serv.upper() + colors.END + ']' + ' is open!' + '  ' + colors.INFO + '==>' + colors.END + ' Reply: ' + str(banner)
+	def validate_ip(self, ip_or_host):
+		try:
+			self.ip = socket.gethostbyname(ip_or_host)
+		except socket.gaierror:
+			sys.exit(colors.WARNING + '[!] ' + colors.END + 'Invalid ip-address/hostname!\n' + colors.WARNING + '[!] ' + colors.END + 'Exiting...')	
 
-def ping(ip, host):
-	print ''
-	print colors.INFO + '[+] ' + colors.END + 'Pinging host ' + ip + ":" + host
-	print ''
-	os.system('ping -q -c1 -w2 ' + ip)
-	print ''
+	def validate_hostname(self, ip):
+		try:
+			self.name = socket.gethostbyaddr(ip)[0]
+		except socket.herror:
+			self.name = 'Uknown Host'
 
 def main():
 	parser = argparse.ArgumentParser(description = "Test a specified ip/host for open ports.")
@@ -44,22 +49,16 @@ def main():
 	elif args.ports:
 		ports = args.ports
     
-	try:
-		ip = socket.gethostbyname(args.ip)
-	except socket.gaierror:
-		sys.exit(colors.WARNING + '[!] ' + colors.END + 'Invalid ip-address/hostname!\n' + colors.WARNING + '[!] ' + colors.END + 'Exiting...')
-	try:
-		host = socket.gethostbyaddr(ip)[0]
-	except socket.herror:
-		host = 'Uknown Host'
+	host = Host(args.ip)
+	
 	protocol = args.type
 
-	ping(ip, host)
+	ping(host.ip, host.name)
 
 	for port in ports:		    # For every given port attempt to connect...
-		if (args.type == 'tcp' or args.type == 'TCP'):
+		if (args.type.upper() == 'TCP'):
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		elif (args.type == 'udp' or args.type == 'UDP'):
+		elif (args.type.upper() == 'UDP'):
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		banner = False
 		s.settimeout(3)
@@ -69,8 +68,8 @@ def main():
 			serv = 'Uknown Service'
 		try:
 			if args.verbose:
-				verbose_message(ip, host, port, protocol, serv)
-			s.connect((ip ,int(port)))
+				verbose_message(host.ip, host.name, port, protocol, serv)
+			s.connect((host.ip, int(port)))
 			s.send("Port Checking")
 			try:
 				banner = s.recv(1024)
@@ -82,6 +81,19 @@ def main():
 			banner = 'No Response...'
 		results_message(port, protocol, serv, banner)
 		s.close()
+
+def verbose_message(ip, hostname, port, protocol, serv):
+	print colors.INFO + '[+] ' + colors.END + 'Attempting to connect to ' + colors.INFO + '::' + colors.END + colors.HOST + ip + colors.END + colors.INFO + ':' + colors.END + colors.HOST + hostname + colors.END + colors.INFO + '::' + colors.END + ' via port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE + serv.upper() + colors.END + ']'
+
+def results_message(port, protocol, serv, banner):
+	print colors.INFO + '[+] ' + colors.END + 'Port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE +serv.upper() + colors.END + ']' + ' is open!' + '  ' + colors.INFO + '==>' + colors.END + ' Reply: ' + str(banner)
+
+def ping(ip, hostname):
+	print ''
+	print colors.INFO + '[+] ' + colors.END + 'Pinging host ' + ip + ":" + hostname
+	print ''
+	os.system('ping -q -c1 -w2 ' + ip)
+	print ''
 
 if __name__ =='__main__':
 	main()
