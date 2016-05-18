@@ -7,6 +7,7 @@ import argparse
 
 class colors:
 	"""Class used to store ansi color codes"""
+
 	HOST='\033[32m'
 	PORT='\033[36m'
 	TYPE='\033[33m'
@@ -16,7 +17,8 @@ class colors:
 	END='\033[0m'
 
 class Host:	
-	"""The Host class represents a host by storing its ip address and its name (whenever its possible)"""
+	"""Represents a host by storing its ip address and its name (whenever its possible)"""
+
 	def __init__(self, ip_or_host):     # The constructor of the class
 		self.validate_ip(ip_or_host)
 		self.validate_hostname(self.ip)
@@ -32,6 +34,25 @@ class Host:
 			self.name = socket.gethostbyaddr(ip)[0]
 		except socket.herror:
 			self.name = 'Uknown Host'
+
+class Service:
+	"""Represents a network service associated with a port"""
+
+	def __init__(self, port):         # The constructor of the class
+		self.verify_service(port)
+
+	def verify_service(self, port):   # Implement service resolving, if possible, given a port
+		try:
+			self.name = socket.getservbyport(port)
+		except socket.error:
+			self.name = 'Uknown Service'
+
+class Port:
+	"""Represents a port by storing its number and its type"""
+
+	def __init__(self, port_num, port_type):   # The constructor of the class
+		self.num = port_num
+		self.protocol = port_type
 
 def main():
 	parser = argparse.ArgumentParser(description = "Test a specified ip/host for open ports.")
@@ -50,26 +71,23 @@ def main():
 	elif args.ports:
 		ports = args.ports
 	host = Host(args.ip)
-	protocol = args.type
 
 	ping(host.ip, host.name)	
 
-	for port in ports:
-		if (args.type.upper() == 'TCP'):                            #
+	for port_num in ports:
+		port = Port(port_num, args.type.upper())
+		if (port.protocol == 'TCP'):                    			#
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   # Protocol
-		elif (args.type.upper() == 'UDP'):                          # Checking
+		elif (port.protocol == 'UDP'):                          	# Checking
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)    #
-
+		service = Service(port.num)
 		banner = False
 		s.settimeout(3)
-		try:                                    #
-			serv = socket.getservbyport(port)   # Service
-		except socket.error:                    # Resolving
-			serv = 'Uknown Service'             #
+		
 		try:
 			if args.verbose:
-				verbose_message(host.ip, host.name, port, protocol, serv)
-			s.connect((host.ip, int(port)))
+				verbose_message(host.ip, host.name, port.num, port.protocol, service.name)
+			s.connect((host.ip, port.num))
 			s.send("Port Checking")
 			try:
 				banner = s.recv(1024)
@@ -79,14 +97,14 @@ def main():
 			continue                # hence the port is closed. In that case advance to the next port
 		if banner=='':
 			banner = 'No Response...'
-		results_message(port, protocol, serv, banner)
+		results_message(port.num, port.protocol, service.name, banner)
 		s.close()
 
-def verbose_message(ip, hostname, port, protocol, serv):   # The extra message printed if the verbose option is on
-	print colors.INFO + '[+] ' + colors.END + 'Attempting to connect to ' + colors.INFO + '::' + colors.END + colors.HOST + ip + colors.END + colors.INFO + ':' + colors.END + colors.HOST + hostname + colors.END + colors.INFO + '::' + colors.END + ' via port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE + serv.upper() + colors.END + ']'
+def verbose_message(ip, hostname, port_num, port_protocol, service_name):   # The extra message printed if the verbose option is on
+	print colors.INFO + '[+] ' + colors.END + 'Attempting to connect to ' + colors.INFO + '::' + colors.END + colors.HOST + ip + colors.END + colors.INFO + ':' + colors.END + colors.HOST + hostname + colors.END + colors.INFO + '::' + colors.END + ' via port ' + colors.PORT + str(port_num) + colors.END + '/' + colors.TYPE + port_protocol + colors.END + ' [' + colors.SERVICE + service_name.upper() + colors.END + ']'
 
-def results_message(port, protocol, serv, banner):   # The message printed for open ports
-	print colors.INFO + '[+] ' + colors.END + 'Port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE +serv.upper() + colors.END + ']' + ' is open!' + '  ' + colors.INFO + '==>' + colors.END + ' Reply: ' + str(banner)
+def results_message(port_num, port_protocol, serv_name, banner):   # The message printed for open ports
+	print colors.INFO + '[+] ' + colors.END + 'Port ' + colors.PORT + str(port_num) + colors.END + '/' + colors.TYPE + port_protocol + colors.END + ' [' + colors.SERVICE +serv_name.upper() + colors.END + ']' + ' is open!' + '  ' + colors.INFO + '==>' + colors.END + ' Reply: ' + str(banner)
 
 def ping(ip, hostname):   # The ping implementation
 	print ''
