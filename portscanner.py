@@ -6,6 +6,7 @@ import os
 import argparse
 
 class colors:
+	"""Class used to store ansi color codes"""
 	HOST='\033[32m'
 	PORT='\033[36m'
 	TYPE='\033[33m'
@@ -14,19 +15,19 @@ class colors:
 	INFO='\033[34m'
 	END='\033[0m'
 
-class Host:
-	
-	def __init__(self, ip_or_host):
+class Host:	
+	"""The Host class represents a host by storing its ip address and its name (whenever its possible)"""
+	def __init__(self, ip_or_host):     # The constructor of the class
 		self.validate_ip(ip_or_host)
 		self.validate_hostname(self.ip)
 
-	def validate_ip(self, ip_or_host):
+	def validate_ip(self, ip_or_host):  # Matches a hostname to an ip address and stores it (if an ip was given in the first place it is stored untouched)
 		try:
 			self.ip = socket.gethostbyname(ip_or_host)
 		except socket.gaierror:
 			sys.exit(colors.WARNING + '[!] ' + colors.END + 'Invalid ip-address/hostname!\n' + colors.WARNING + '[!] ' + colors.END + 'Exiting...')	
 
-	def validate_hostname(self, ip):
+	def validate_hostname(self, ip):    # Attempts to match the given ip to a hostname and stores it
 		try:
 			self.name = socket.gethostbyaddr(ip)[0]
 		except socket.herror:
@@ -48,24 +49,23 @@ def main():
 		ports = range(0, 65536)
 	elif args.ports:
 		ports = args.ports
-    
 	host = Host(args.ip)
-	
 	protocol = args.type
 
-	ping(host.ip, host.name)
+	ping(host.ip, host.name)	
 
-	for port in ports:		    # For every given port attempt to connect...
-		if (args.type.upper() == 'TCP'):
-			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		elif (args.type.upper() == 'UDP'):
-			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	for port in ports:
+		if (args.type.upper() == 'TCP'):                            #
+			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   # Protocol
+		elif (args.type.upper() == 'UDP'):                          # Checking
+			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)    #
+
 		banner = False
 		s.settimeout(3)
-		try:
-			serv = socket.getservbyport(port)
-		except socket.error:
-			serv = 'Uknown Service'
+		try:                                    #
+			serv = socket.getservbyport(port)   # Service
+		except socket.error:                    # Resolving
+			serv = 'Uknown Service'             #
 		try:
 			if args.verbose:
 				verbose_message(host.ip, host.name, port, protocol, serv)
@@ -75,20 +75,20 @@ def main():
 				banner = s.recv(1024)
 			except socket.timeout:
 				banner = ''
-		except socket.error:		# If a socket.error exception is caught, it means the attempt to connect has failed, 
-			continue				# hence the port is closed... In that case advance to the next port.
+		except socket.error:        # If a socket.error exception is caught the attempt to connect has failed, 
+			continue                # hence the port is closed. In that case advance to the next port
 		if banner=='':
 			banner = 'No Response...'
 		results_message(port, protocol, serv, banner)
 		s.close()
 
-def verbose_message(ip, hostname, port, protocol, serv):
+def verbose_message(ip, hostname, port, protocol, serv):   # The extra message printed if the verbose option is on
 	print colors.INFO + '[+] ' + colors.END + 'Attempting to connect to ' + colors.INFO + '::' + colors.END + colors.HOST + ip + colors.END + colors.INFO + ':' + colors.END + colors.HOST + hostname + colors.END + colors.INFO + '::' + colors.END + ' via port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE + serv.upper() + colors.END + ']'
 
-def results_message(port, protocol, serv, banner):
+def results_message(port, protocol, serv, banner):   # The message printed for open ports
 	print colors.INFO + '[+] ' + colors.END + 'Port ' + colors.PORT + str(port) + colors.END + '/' + colors.TYPE + protocol.upper() + colors.END + ' [' + colors.SERVICE +serv.upper() + colors.END + ']' + ' is open!' + '  ' + colors.INFO + '==>' + colors.END + ' Reply: ' + str(banner)
 
-def ping(ip, hostname):
+def ping(ip, hostname):   # The ping implementation
 	print ''
 	print colors.INFO + '[+] ' + colors.END + 'Pinging host ' + ip + ":" + hostname
 	print ''
