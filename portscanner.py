@@ -76,7 +76,7 @@ def main():
 
 	for port_num in ports:
 		port = Port(port_num, args.type.upper())
-		if (port.protocol == 'TCP'):                    			#
+		if (port.protocol == 'TCP'):								#
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   # Protocol
 		elif (port.protocol == 'UDP'):                          	# Checking
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)    #
@@ -87,10 +87,10 @@ def main():
 		try:
 			if args.verbose:
 				verbose_message(host.ip, host.name, port.num, port.protocol, service.name)
-			s.connect((host.ip, port.num))
-			s.send("Port Checking")
+			s.connect((host.ip, port.num))	# Connect to an ip using the specified port
+			s.send("Port Checking")		# Send the message 'Port Checking' to the connected server
 			try:
-				banner = s.recv(1024)
+				banner = s.recv(1024)		# Attempt to get a response message
 			except socket.timeout:
 				banner = ''
 		except socket.error:        # If a socket.error exception is caught the attempt to connect has failed, 
