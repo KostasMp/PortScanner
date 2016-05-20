@@ -6,6 +6,7 @@ import os
 import argparse
 
 from source.colors import Colors
+from source.netstructs import *
 
 def main():
 	parser = argparse.ArgumentParser(description = "Test a specified ip/host for open ports.")
