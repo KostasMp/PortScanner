@@ -30,7 +30,8 @@ class Service:
 	"""Represents a network service associated with a port"""
 
 	def __init__(self, port):         # The constructor of the class
-		self.verify_service(port)
+		self.verify_service(port.num)
+		self.port = port
 
 	def verify_service(self, port):   # Implement service resolving, if possible, given a port
 		try:
@@ -71,7 +72,7 @@ def main():
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   # Protocol
 		elif (port.protocol == 'UDP'):                          	# Checking
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)    #
-		service = Service(port.num)
+		service = Service(port)
 		banner = False
 		s.settimeout(3)
 		
