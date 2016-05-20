@@ -1,5 +1,3 @@
-#!/bin/python
-
 class Colors:
 	"""Class used to store ansi color codes"""
 
