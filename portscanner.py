@@ -5,7 +5,7 @@ import sys
 import os
 import argparse
 
-from colors import Colors
+from source.colors import Colors
 
 class Host:	
 	"""Represents a host by storing its ip address and its name (whenever its possible)"""
