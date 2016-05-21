@@ -27,10 +27,10 @@ def main():
 	ping(host.ip, host.name)	
 
 	for port_num in ports:
-		port = Port(port_num, args.type.upper())
-		if (port.protocol == 'TCP'):								#
+		port = Port(port_num, args.type.lower())
+		if (port.protocol == 'tcp'):								#
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)   # Protocol
-		elif (port.protocol == 'UDP'):                          	# Checking
+		elif (port.protocol == 'udp'):                          	# Checking
 			s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)    #
 		service = Service(port)
 		banner = False
