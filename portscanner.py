@@ -26,6 +26,7 @@ def main():
 
 	ping(host.ip, host.name)	
 
+	open_ports_meta = []
 	for port_num in ports:
 		port = Port(port_num, args.type.lower())
 		if (port.protocol == 'tcp'):								#
@@ -49,8 +50,11 @@ def main():
 			continue                # hence the port is closed. In that case advance to the next port
 		if banner=='':
 			banner = 'No Response...'
-		results_message(port.num, port.protocol, service.name, banner)
+		open_ports_meta.append((port, service, banner))
 		s.close()
+
+	for item in open_ports_meta:
+		results_message(item[0].num, item[0].protocol, item[1].name, item[2])
 
 def verbose_message(ip, hostname, port_num, port_protocol, service_name):   # The extra message printed if the verbose option is on
 	print Colors.INFO + '[+] ' + Colors.END + 'Attempting to connect to ' + Colors.INFO + '::' + Colors.END + Colors.HOST + ip + Colors.END + Colors.INFO + ':' + Colors.END + Colors.HOST + hostname + Colors.END + Colors.INFO + '::' + Colors.END + ' via port ' + Colors.PORT + str(port_num) + Colors.END + '/' + Colors.TYPE + port_protocol + Colors.END + ' [' + Colors.SERVICE + service_name.upper() + Colors.END + ']'
