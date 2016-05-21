@@ -11,12 +11,12 @@ class Service:
 	"""Represents a network service associated with a port"""
 
 	def __init__(self, port):         # The constructor of the class
-		self.verify_service(port.num)
+		self.verify_service(port)
 		self.port = port
 
 	def verify_service(self, port):   # Implement service resolving, if possible, given a port
 		try:
-			self.name = socket.getservbyport(port)
+			self.name = socket.getservbyport(port.num, port.protocol)
 		except socket.error:
 			self.name = 'Uknown Service'
 
