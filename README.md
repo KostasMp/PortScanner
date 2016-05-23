@@ -11,17 +11,17 @@ Currently PortScanner supports the following features:
 - Hostname-to-IP/IP-to-Hostname resolving     
 
 ## Use    
-PortScanner is using the _argparse_ module and thus its use is very simple.    
        
 To execute it:     
 `./portscanner.py [OPTIONS] HOST/IP`    
         
 To learn about all the available options:    
 `./portscanner.py -h`    
-
+	
 ## Implementation    
 Great efforts have-been/will-be made to keep PortScanner's code as simple and understandable as possible.    
-The "networking" parts of the code are implemented with raw sockets (with use of the _socket_ module).    
+The _argparse_ module has been used as the mechanism for parsing the user's input.    
+The "networking" parts of the code are implemented with sockets (with use of the _socket_ module).    
 
 ## Acknowledgements    
 The idea and part of the initial code was taken by the **Primal Security** website: [Primal Security - Python Port Scanner Tutorial][pspt]    
