@@ -6,6 +6,7 @@ The projects name will be changed as soon as i find a fancy one.
 Currently PortScanner supports the following features:    
 - Open port scanning    
 - Both UDP and TCP support    
+- Multiple host support    
 - Host pinging    
 - Service resolving    
 - Hostname-to-IP/IP-to-Hostname resolving     
