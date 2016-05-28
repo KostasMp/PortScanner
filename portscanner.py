@@ -3,8 +3,9 @@
 import os
 import argparse
 
-from source.colors import Colors
-from source.netstructs import *
+from src.colors import Colors
+from src.netstructs import *
+from src.loadbar import loading_bar
 
 def main():
 	parser = argparse.ArgumentParser(description = "Test a specified ip/host for open ports.")
@@ -27,6 +28,7 @@ def main():
 	ping(host.ip, host.name)	
 
 	open_ports_meta = []
+	port_count = 0;
 	for port_num in ports:
 		port = Port(port_num, args.type.lower())
 		if (port.protocol == 'tcp'):								#
@@ -36,6 +38,9 @@ def main():
 		service = Service(port)
 		banner = False
 		s.settimeout(3)
+
+		port_count += 1
+		loading_bar(port_count, len(ports), True)
 		
 		try:
 			if args.verbose:
