@@ -43,7 +43,6 @@ def main():
 			s.settimeout(3)
 
 			port_count += 1
-			loading_bar(port_count, len(ports), True)
 		
 			try:
 				if args.verbose:
@@ -54,11 +53,13 @@ def main():
 					banner = s.recv(1024)		# Attempt to get a response message
 				except socket.timeout:
 					banner = ''
-			except socket.error:        # If a socket.error exception is caught the attempt to connect has failed, 
-				continue                # hence the port is closed. In that case advance to the next port
+			except socket.error:							# If a socket.error exception is caught the attempt to connect has failed, 
+				loading_bar(port_count, len(ports), True)
+				continue									# hence the port is closed. In that case advance to the next port
 			if banner=='':
 				banner = 'No Response...'
 			open_ports_meta.append((port, service, banner))
+			loading_bar(port_count, len(ports), True)
 			s.close()
 
 		for item in open_ports_meta:
