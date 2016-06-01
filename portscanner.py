@@ -30,6 +30,8 @@ def main():
 		host = Host(target)
 		ping(host.ip, host.name)	
 
+		loading_bar(0, len(ports), True)
+
 		open_ports_meta = []
 		port_count = 0;
 		for port_num in ports:
