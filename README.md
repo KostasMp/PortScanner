@@ -26,7 +26,7 @@ The "networking" parts of the code are implemented with sockets (with use of the
 
 ## Acknowledgements    
 The idea and part of the initial code was taken by the **Primal Security** website: [Primal Security - Python Port Scanner Tutorial][pspt]    
-**Special Thanks** to [DaknOb][daknob] for making my life as hard (and creative) as possible and for always keeping track of the issues list     
+**Special Thanks** to [DaknOb][daknob] for making my life as hard (and creative) as possible and for always keeping track of the issues list
 so that its never empty.     
 
 License
