@@ -1,4 +1,6 @@
 import socket
+import sys
+from colors import Colors
 
 class Port:
     """Represents a port by storing its number and its type"""
@@ -25,7 +27,7 @@ class Host:
 
     def __init__(self, ip_or_host):     # The constructor of the class
         self.validate_ip(ip_or_host)
-        self.validate_hostname(self.ip)
+        self.validate_hostname(ip_or_host)
 
     def validate_ip(self, ip_or_host):  # Matches a hostname to an ip address and stores it (if an ip was given in the first place it is stored untouched)
         try:
@@ -33,8 +35,11 @@ class Host:
         except socket.gaierror:
             sys.exit(Colors.WARNING + '[!] ' + Colors.END + 'Invalid ip-address/hostname!\n' + Colors.WARNING + '[!] ' + Colors.END + 'Exiting...')	
 
-    def validate_hostname(self, ip):    # Attempts to match the given ip to a hostname and stores it
-        try:
-            self.name = socket.gethostbyaddr(ip)[0]
-        except socket.herror:
-            self.name = 'Uknown Host'
+    def validate_hostname(self, ip_or_host):    # Attempts to match the given ip to a hostname and stores it
+        if self.ip != ip_or_host:
+            self.name = ip_or_host
+        else:
+            try:
+                self.name = socket.gethostbyaddr(ip_or_host)[0]
+            except socket.herror:
+                self.name = 'Uknown Host'
