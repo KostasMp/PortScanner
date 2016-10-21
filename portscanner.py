@@ -1,11 +1,12 @@
 #!/usr/bin/python
 
-import os
 import argparse
 
 from src.colors import Colors
 from src.netstructs import *
 from src.loadbar import loading_bar
+from src.messages import *
+from src.ping import ping
 
 def main():
     parser = argparse.ArgumentParser(description = "Test a specified ip/host for open ports.")
@@ -62,19 +63,6 @@ def main():
 
         for item in open_ports_meta:
             results_message(item[0].num, item[0].protocol, item[1].name, item[2])
-
-def verbose_message(ip, hostname, port_num, port_protocol, service_name):   # The extra message printed if the verbose option is on
-    print Colors.INFO + '[+] ' + Colors.END + 'Attempting to connect to ' + Colors.INFO + '::' + Colors.END + Colors.HOST + ip + Colors.END + Colors.INFO + ':' + Colors.END + Colors.HOST + hostname + Colors.END + Colors.INFO + '::' + Colors.END + ' via port ' + Colors.PORT + str(port_num) + Colors.END + '/' + Colors.TYPE + port_protocol + Colors.END + ' [' + Colors.SERVICE + service_name.upper() + Colors.END + ']'
-
-def results_message(port_num, port_protocol, serv_name, banner):   # The message printed for open ports
-    print Colors.INFO + '[+] ' + Colors.END + 'Port ' + Colors.PORT + str(port_num) + Colors.END + '/' + Colors.TYPE + port_protocol + Colors.END + ' [' + Colors.SERVICE +serv_name.upper() + Colors.END + ']' + ' is open!' + '  ' + Colors.INFO + '==>' + Colors.END + ' Reply: ' + str(banner)
-
-def ping(ip, hostname):   # The ping implementation
-    print ''
-    print Colors.INFO + '[+] ' + Colors.END + 'Pinging host ' + ip + ":" + hostname
-    print ''
-    os.system('ping -q -c1 -w2 ' + ip)
-    print ''
 
 if __name__ =='__main__':
     main()
